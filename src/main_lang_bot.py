@@ -4,6 +4,8 @@ import os
 from aiogram import Bot, Dispatcher, executor, types
 from dotenv import load_dotenv
 
+from src.tts import generate_date_text_ja, tts, random_date
+
 load_dotenv()
 
 API_TOKEN = os.getenv("TG_TOKEN")
@@ -18,7 +20,15 @@ dp = Dispatcher(bot)
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
-    await message.reply("Hi!\nI'm EchoBot!\nPowered by aiogram.")
+    await message.reply("Lang bot 0.1: Japanese dates TTS")
+
+
+@dp.message_handler(commands=['date'])
+async def send_date(message: types.Message):
+    dt = random_date()
+    text = generate_date_text_ja(dt)
+    audio_file = tts(text)
+    await message.answer_audio(audio_file, caption=text)
 
 
 @dp.message_handler()
