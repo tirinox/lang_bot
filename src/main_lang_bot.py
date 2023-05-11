@@ -9,12 +9,16 @@ from tts import generate_date_text_ja, tts, random_date
 load_dotenv()
 
 API_TOKEN = os.getenv("TG_TOKEN")
+if not API_TOKEN:
+    raise ValueError("No API token provided")
+
+PROXY = os.getenv("TG_PROXY") or None
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
 # Initialize bot and dispatcher
-bot = Bot(token=API_TOKEN)
+bot = Bot(token=API_TOKEN, proxy=PROXY)
 dp = Dispatcher(bot)
 
 
