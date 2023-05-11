@@ -29,9 +29,12 @@ async def send_welcome(message: types.Message):
 
 @dp.message_handler(commands=['date'])
 async def send_date(message: types.Message):
+    logging.info(f"New incoming message from user {message.from_user.id}")
     dt = random_date()
     text = generate_date_text_ja(dt)
     audio_file = tts(text)
+    audio_file.name = f'out-{text}.mp3'
+    logging.info(f'Sending audio file to user {message.from_user.id}, cation: "{text}"')
     await message.answer_audio(audio_file, caption=text)
 
 
