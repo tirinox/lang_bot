@@ -4,7 +4,7 @@ import os
 from aiogram import Bot, Dispatcher, executor, types
 from dotenv import load_dotenv
 
-from src.tts import generate_date_text_ja, tts, random_date
+from tts import generate_date_text_ja, tts, random_date
 
 load_dotenv()
 
