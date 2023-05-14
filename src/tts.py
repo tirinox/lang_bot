@@ -6,15 +6,18 @@ import gtts
 
 
 def random_date():
-    # random date
-    year = random.randint(2010, 2034) if random.uniform(0, 1) > 0.4 else random.randint(1800, 2050)
-    month = random.randint(1, 12)
-    day = random.randint(1, 31)
-    return datetime(
-        year,
-        month,
-        day,
-    )
+    while True:
+        try:
+            year = random.randint(2010, 2034) if random.uniform(0, 1) > 0.4 else random.randint(1800, 2050)
+            month = random.randint(1, 12)
+            day = random.randint(1, 31)
+            return datetime(
+                year,
+                month,
+                day,
+            )
+        except ValueError:
+            pass
 
 
 def random_date_interval(start_date, end_date):
