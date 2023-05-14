@@ -96,7 +96,8 @@ class Manager:
     async def tick(self):
         logger.info(f'Tick: {len(self.sessions)} sessions')
         now = datetime.now().timestamp()
-        for ident, session in self.sessions.items():
+        for ident in list(self.sessions):
+            session = self.sessions[ident]
             if now - session.last_ts > session.period:
                 await self.on_timer(session)
 
@@ -109,3 +110,6 @@ class Manager:
 
     async def run_in_background(self, *args, **kwargs):
         asyncio.create_task(self.main_loop())
+
+    def get_session(self, ident: str) -> Session:
+        return self.sessions.get(ident)
