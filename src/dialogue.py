@@ -11,10 +11,11 @@ QUERY_TEST = '何月何日ですか？'
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_PERIOD = 60 * 60  # 1 hour
+
 
 def register_dialogs(dp: Dispatcher, mananger: Manager):
     async def tick_handler(session: Session):
-        # await dp.bot.send_message(session.student_ident, 'Tick!')
         try:
             session.last_question = await ask_date(dp.bot, session.student_ident)
         except Exception as e:
@@ -53,7 +54,7 @@ def register_dialogs(dp: Dispatcher, mananger: Manager):
     @dp.message_handler(commands=['register'])
     async def register(message: Message):
         logging.info(f"New incoming register message from user {message.from_user.id}")
-        mananger.register_student(message.from_user.id, 60)
+        mananger.register_student(message.from_user.id, DEFAULT_PERIOD)
         await message.answer('You are registered!')
 
     @dp.message_handler(commands=['unregister'])
