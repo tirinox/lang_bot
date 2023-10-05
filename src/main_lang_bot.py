@@ -1,13 +1,17 @@
+import asyncio
 import logging
 import os
 
-from aiogram import Bot, Dispatcher, executor
+from aiogram import Bot, Dispatcher
+from aiogram.filters import Command
 from dotenv import load_dotenv
 
+from bot import LanguageBot
+from db import DB
 from logs import setup_logs
 
 
-def main():
+async def main():
     load_dotenv()
     setup_logs(log_level=logging.INFO)
 
@@ -16,21 +20,21 @@ def main():
     if not api_token:
         raise ValueError("No API token provided")
 
-    proxy = os.getenv("TG_PROXY") or None
-
     # Initialize bot and dispatcher
-    bot = Bot(token=api_token, proxy=proxy)
-    dp = Dispatcher(bot)
+    bot = Bot(token=api_token)
+    dp = Dispatcher()
 
-    # manager = Manager('sessions.json')
-    # register_dialogs(dp, manager)
+    db = DB(os.environ)
+    logic = LanguageBot(bot, db)
 
-    # Start the Bot
-    executor.start_polling(
-        dp, skip_updates=True,
-        # on_startup=manager.run_in_background
-    )
+    @dp.message(Command('start'))
+    async def start(message):
+        await message.answer('Hello! I am a bot')
+
+    await logic.start_in_background()
+
+    await dp.start_polling(bot, skip_updates=True)
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
