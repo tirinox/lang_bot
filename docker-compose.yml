@@ -1,0 +1,59 @@
+version: "3.3"
+services:
+  lang_tg_bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - redis
+      - dozzle
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    networks:
+      - redis-net
+    volumes:
+      - ./src:/app
+#      - ./config.yaml:/config/config.yaml
+
+  redis:
+    image: "redis:6.2.13-alpine"
+    volumes:
+      - ./redis_data:/data
+    networks:
+      - redis-net
+    restart: always
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    expose:
+      - "${REDIS_PORT}"
+    command:
+      - 'redis-server'
+      - '--save 900 1'
+      - '--save 300 10'
+      - '--save 60 10000'
+      - '--port ${REDIS_PORT}'
+      - '--requirepass ${REDIS_PASSWORD}'
+
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8888:8080"
+    environment:
+      - DOZZLE_USERNAME=${DOZZLE_USERNAME}
+      - DOZZLE_PASSWORD=${DOZZLE_PASSWORD}
+      - DOZZLE_KEY=${DOZZLE_KEY}
+      - DOZZLE_TAILSIZE=${DOZZLE_TAILSIZE}
+
+
+networks:
+  redis-net:
+
+volumes:
+  redis_data:
+  app:
