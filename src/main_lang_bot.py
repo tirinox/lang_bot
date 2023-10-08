@@ -6,9 +6,10 @@ from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from dotenv import load_dotenv
 
-from bot import LanguageBot
-from db import DB
-from logs import setup_logs
+from logic.bot import LanguageBot
+from helpers.db import DB
+from helpers.logs import setup_logs
+from helpers.globals import Globals
 
 
 async def main():
@@ -22,18 +23,13 @@ async def main():
 
     # Initialize bot and dispatcher
     bot = Bot(token=api_token)
-    dp = Dispatcher()
 
-    db = DB(os.environ)
-    logic = LanguageBot(bot, db)
+    Globals.db = DB(os.environ)
+    Globals.logic = LanguageBot(bot, Globals.db)
 
-    @dp.message(Command('start'))
-    async def start(message):
-        await message.answer('Hello! I am a bot')
+    await Globals.logic.start_in_background()
 
-    await logic.start_in_background()
-
-    await dp.start_polling(bot, skip_updates=True)
+    await Globals.dp.start_polling(bot, skip_updates=True)
 
 
 if __name__ == '__main__':
